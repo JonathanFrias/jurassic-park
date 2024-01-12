@@ -1,0 +1,2 @@
+class CagesController < ApplicationController
+end

@@ -24,14 +24,27 @@ RSpec.configure do |config|
       paths: {},
       servers: [
         {
-          url: 'https://{defaultHost}',
+          url: 'http://{defaultHost}',
           variables: {
             defaultHost: {
-              default: 'www.example.com'
+              default: 'localhost:3000'
             }
           }
         }
-      ]
+      ],
+      components: {
+        schemas: {
+          cage: {
+            type: :object,
+            properties: {
+              id: { type: :integer },
+              name: { type: :string },
+              status: { type: :string }
+            },
+            required: %w[id name]
+          }
+        }
+      }
     }
   }
 

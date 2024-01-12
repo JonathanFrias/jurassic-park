@@ -36,10 +36,10 @@ paths:
               examples:
                 cages:
                   value:
-                  - id: 109
+                  - id: 53
                     name: Herbivores
                     status: closed
-                  - id: 110
+                  - id: 54
                     name: Carnivores
                     status: closed
               schema:
@@ -67,7 +67,7 @@ paths:
                   default: New Cage
                 status:
                   type: string
-                  default: closed
+                  default: down
               required:
               - name
   "/cages/{id}":
@@ -114,7 +114,7 @@ paths:
                   default: Herbivores Cage
                 status:
                   type: string
-                  default: closed
+                  default: down
               required:
               - name
     delete:
@@ -130,6 +130,8 @@ paths:
       responses:
         '200':
           description: Cage deleted
+        '422':
+          description: invalid request
         '404':
           description: cage not found
 servers:

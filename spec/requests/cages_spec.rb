@@ -1,5 +1,4 @@
 require 'swagger_helper'
-ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 RSpec.describe 'cages', type: :request do
   path '/cages' do
@@ -36,7 +35,7 @@ RSpec.describe 'cages', type: :request do
         type: :object,
         properties: {
           name: { type: :string, default: "New Cage" },
-          status: { type: :string, default: "closed" }
+          status: { type: :string, default: "down" }
         },
         required: [ 'name' ]
       }
@@ -83,14 +82,14 @@ RSpec.describe 'cages', type: :request do
         type: :object,
         properties: {
           name: { type: :string, default: "Herbivores Cage" },
-          status: { type: :string, default: "closed" }
+          status: { type: :string, default: "down" }
         },
         required: [ 'name' ]
       }
 
       response '200', 'Cage updated' do
-        let(:id) { Cage.create(name: 'Herbivores', status: 'closed').id }
-        let(:cage) { { cage: { name: 'Carnivores', status: 'open' } } }
+        let(:id) { Cage.create(name: 'Herbivores', status: 'down').id }
+        let(:cage) { { cage: { name: 'Carnivores', status: 'active' } } }
         run_test!
       end
 
@@ -117,6 +116,15 @@ RSpec.describe 'cages', type: :request do
       response '200', 'Cage deleted' do
         let(:id) { Cage.create(name: 'Herbivores').id }
         run_test!
+      end
+
+      response '422', 'invalid request' do
+        let(:id) { Cage.create(name: 'Herbivores').id }
+        let!(:dinosaur) { Dinosaur.tyrannosaurus.update(cage_id: id) }
+
+        run_test! do |response|
+          expect(response.body).to eq "[\"Cage must be empty before it can be destroyed\"]"
+        end
       end
 
       response '404', 'cage not found' do

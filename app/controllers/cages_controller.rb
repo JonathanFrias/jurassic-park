@@ -1,5 +1,6 @@
 class CagesController < ApplicationController
   include Pagy::Backend
+  before_action :set_cage, only: [:show, :update, :destroy]
 
   def index
     pagy, cages = pagy(Cage.all, items: params[:items], outset: params[:offset])
@@ -13,41 +14,46 @@ class CagesController < ApplicationController
     cage = Cage.new(cage_params)
 
     if cage.save
-      render json: CagePresenter.new(cage).as_json, status: :created
+      render json: cage_presenter, status: :created
     else
       render json: cage.errors.full_messages, status: :unprocessable_entity
     end
+  end
+
+  def show
+    render json: cage_presenter, status: :ok
   end
 
   def update
-    cage = Cage.find(params[:id])
-
     if cage.update(cage_params)
-      render json: CagePresenter.new(cage).as_json, status: :ok
+      render json: cage_presenter, status: :ok
     else
       render json: cage.errors.full_messages, status: :unprocessable_entity
     end
-
-  rescue ActiveRecord::RecordNotFound
-    head :not_found
   end
 
   def destroy
-    cage = Cage.find(params[:id])
-
     if cage.destroy
-      render json: CagePresenter.new(cage).as_json, status: :ok
+      render json: cage_presenter, status: :ok
     else
       render json: cage.errors.full_messages, status: :unprocessable_entity
     end
+  end
 
+  private
+  attr_reader :cage
+
+  def cage_params
+    params.require(:cage).permit(:name, :status)
+  end
+
+  def set_cage
+    @cage = Cage.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     head :not_found
   end
 
-  private
-
-  def cage_params
-    params.require(:cage).permit(:name, :status)
+  def cage_presenter
+    CagePresenter.new(cage)
   end
 end

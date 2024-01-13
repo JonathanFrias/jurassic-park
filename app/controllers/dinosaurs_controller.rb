@@ -4,7 +4,12 @@ class DinosaursController < ApplicationController
   before_action :set_dinosaur, only: [:show, :update, :destroy]
 
   def index
-    pagy, dinosaurs = pagy(Dinosaur.all, items: params[:items], outset: params[:offset])
+    query = Dinosaur
+
+    query = query.herbivores if bool(params[:diet] == 'herbivore')
+    query = query.carnivores if bool(params[:diet] == 'carnivore')
+
+    pagy, dinosaurs = pagy(query.all, items: params[:items], outset: params[:offset])
 
     response.headers["X-Total-Count"] = pagy.count
 

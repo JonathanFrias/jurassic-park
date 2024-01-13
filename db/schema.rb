@@ -29,5 +29,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_13_165518) do
     t.index ["cage_id"], name: "index_dinosaurs_on_cage_id"
   end
 
+  create_table "users", force: :cascade do |t|
+    t.string "name"
+    t.string "token"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   add_foreign_key "dinosaurs", "cages"
 end

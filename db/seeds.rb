@@ -8,13 +8,4 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
-Species.insert_all([
-  { name: 'Tyrannosaurus', diet: 'carnivore', },
-  { name: 'Velociraptor' , diet: 'carnivore', },
-  { name: 'Spinosaurus'  , diet: 'carnivore', },
-  { name: 'Megalosaurus' , diet: 'carnivore', },
-  { name: 'Brachiosaurus', diet: 'herbivore' },
-  { name: 'Stegosaurus', diet: 'herbivore' },
-  { name: 'Ankylosaurus', diet: 'herbivore' },
-  { name: 'Triceratops', diet: 'herbivore' },
-])
+User.create(name: "user", token: "1234567890")

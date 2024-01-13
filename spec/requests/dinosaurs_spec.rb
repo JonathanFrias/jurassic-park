@@ -6,6 +6,7 @@ RSpec.describe 'dinosaurs', type: :request do
 
   path '/dinosaurs' do
     get 'Retrieves all dinosaurs' do
+      security [ api_key: [] ]
       tags 'Dinosaurs'
       consumes 'application/json'
       produces 'application/json'
@@ -13,6 +14,7 @@ RSpec.describe 'dinosaurs', type: :request do
       parameter name: :page,     in: :query, type: :integer, description: 'Page number', default: 1
       parameter name: :items, in: :query, type: :integer, description: 'Per page count', default: 10
       parameter name: :include_cage, in: :query, type: :boolean, description: 'Include cage', default: false
+      parameter name: :diet, in: :query, type: :string, description: 'Filter diet ("herbivore" or "carnivore")', default: 'herbivore | carnivore'
 
       response '200', 'List your Jurassic Park Dinosaurs' do
         schema type: :array,
@@ -26,12 +28,14 @@ RSpec.describe 'dinosaurs', type: :request do
         let(:page) { 1 }
         let(:items) { 10 }
         let(:include_cage) { false }
+        let(:diet) { '' }
 
         run_test!
       end
     end
 
     post 'Creates a dinosaur' do
+      security [ api_key: [] ]
       tags 'Dinosaurs'
       consumes 'application/json'
       produces 'application/json'
@@ -60,6 +64,7 @@ RSpec.describe 'dinosaurs', type: :request do
 
   path '/dinosaurs/{id}' do
     get 'Retrieves a dinosaur' do
+      security [ api_key: [] ]
       tags 'Dinosaurs'
       consumes 'application/json'
       produces 'application/json'
@@ -89,6 +94,7 @@ RSpec.describe 'dinosaurs', type: :request do
     end
 
     patch 'Updates a dinosaur' do
+      security [ api_key: [] ]
       tags 'Dinosaurs'
       consumes 'application/json'
       produces 'application/json'
@@ -123,6 +129,7 @@ RSpec.describe 'dinosaurs', type: :request do
     end
 
     delete 'Deletes a dinosaur' do
+      security [ api_key: [] ]
       tags 'Dinosaurs'
       consumes 'application/json'
       produces 'application/json'

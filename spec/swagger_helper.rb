@@ -21,6 +21,9 @@ RSpec.configure do |config|
         title: 'API V1',
         version: 'v1'
       },
+      security: {
+        api_key: []
+      },
       paths: {},
       servers: [
         {
@@ -33,6 +36,13 @@ RSpec.configure do |config|
         }
       ],
       components: {
+        securitySchemes: {
+          api_key: {
+            type: :apiKey,
+            name: 'X-API-KEY',
+            in: :header
+          }
+        },
         schemas: {
           cage: {
             type: :object,

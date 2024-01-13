@@ -6,6 +6,8 @@ RSpec.describe 'cages', type: :request do
 
   path '/cages' do
     get 'Retrieves all cages' do
+      security [ api_key: [] ]
+
       tags 'Cages'
       consumes 'application/json'
       produces 'application/json'
@@ -30,6 +32,8 @@ RSpec.describe 'cages', type: :request do
     end
 
     post 'Creates a cage' do
+      security [ api_key: [] ]
+
       tags 'Cages'
       consumes 'application/json'
       produces 'application/json'
@@ -58,6 +62,7 @@ RSpec.describe 'cages', type: :request do
   path '/cages/{id}' do
 
     get 'Retrieves a cage' do
+      security [ api_key: [] ]
       tags 'Cages'
       consumes 'application/json'
       produces 'application/json'
@@ -78,6 +83,7 @@ RSpec.describe 'cages', type: :request do
     end
 
     patch 'Updates a cage' do
+      security [ api_key: [] ]
       tags 'Cages'
       consumes 'application/json'
       produces 'application/json'
@@ -113,6 +119,7 @@ RSpec.describe 'cages', type: :request do
     end
 
     delete 'Deletes a cage' do
+      security [ api_key: [] ]
       tags 'Cages'
       consumes 'application/json'
       produces 'application/json'

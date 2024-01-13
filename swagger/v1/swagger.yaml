@@ -3,10 +3,14 @@ openapi: 3.0.1
 info:
   title: API V1
   version: v1
+security:
+  api_key: []
 paths:
   "/cages":
     get:
       summary: Retrieves all cages
+      security:
+      - api_key: []
       tags:
       - Cages
       parameters:
@@ -22,12 +26,12 @@ paths:
         default: 10
         schema:
           type: integer
-      - name: offset
+      - name: include_dinosaurs
         in: query
-        description: Offset
-        default: 0
+        description: Include dinosaurs
+        default: false
         schema:
-          type: integer
+          type: boolean
       responses:
         '200':
           description: List your Jurassic Park Cages
@@ -36,18 +40,24 @@ paths:
               examples:
                 cages:
                   value:
-                  - id: 59
+                  - id: 96
                     name: Herbivores
-                    status: closed
-                  - id: 60
+                    status: down
+                    capacity: 10
+                    population: 0
+                  - id: 97
                     name: Carnivores
-                    status: closed
+                    status: down
+                    capacity: 10
+                    population: 0
               schema:
                 type: array
                 items:
                   "$ref": "#/components/schemas/cage"
     post:
       summary: Creates a cage
+      security:
+      - api_key: []
       tags:
       - Cages
       parameters: []
@@ -67,12 +77,14 @@ paths:
                   default: New Cage
                 status:
                   type: string
-                  default: down
+                  default: active|down
               required:
               - name
   "/cages/{id}":
     get:
       summary: Retrieves a cage
+      security:
+      - api_key: []
       tags:
       - Cages
       parameters:
@@ -81,6 +93,12 @@ paths:
         required: true
         schema:
           type: integer
+      - name: include_dinosaurs
+        in: query
+        description: Include dinosaurs
+        default: false
+        schema:
+          type: boolean
       responses:
         '200':
           description: Cage found
@@ -88,6 +106,8 @@ paths:
           description: Cage not found
     patch:
       summary: Updates a cage
+      security:
+      - api_key: []
       tags:
       - Cages
       parameters:
@@ -114,11 +134,16 @@ paths:
                   default: Herbivores Cage
                 status:
                   type: string
-                  default: down
+                  default: active|down
+                capacity:
+                  type: integer
+                  default: 10
               required:
               - name
     delete:
       summary: Deletes a cage
+      security:
+      - api_key: []
       tags:
       - Cages
       parameters:
@@ -134,12 +159,214 @@ paths:
           description: invalid request
         '404':
           description: cage not found
+  "/dinosaurs":
+    get:
+      summary: Retrieves all dinosaurs
+      security:
+      - api_key: []
+      tags:
+      - Dinosaurs
+      parameters:
+      - name: page
+        in: query
+        description: Page number
+        default: 1
+        schema:
+          type: integer
+      - name: items
+        in: query
+        description: Per page count
+        default: 10
+        schema:
+          type: integer
+      - name: include_cage
+        in: query
+        description: Include cage
+        default: false
+        schema:
+          type: boolean
+      - name: diet
+        in: query
+        description: Filter diet ("herbivore" or "carnivore")
+        default: herbivore | carnivore
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List your Jurassic Park Dinosaurs
+          content:
+            application/json:
+              examples:
+                dinosaurs:
+                  value:
+                  - id: 48
+                    name: Tyrannosaurus
+                    cage_id: 98
+                    diet: carnivore
+                  - id:
+                    name: Velociraptor
+                    cage_id: 98
+                    diet: carnivore
+                dinosaurs_with_cage:
+                  value:
+                  - id: 48
+                    name: Tyrannosaurus
+                    cage_id: 98
+                    diet: carnivore
+                    cage:
+                      id: 98
+                      name: Test Cage
+                      status: active
+                      capacity: 10
+                      population: 1
+                  - id:
+                    name: Velociraptor
+                    cage_id: 98
+                    diet: carnivore
+                    cage:
+                      id: 98
+                      name: Test Cage
+                      status: active
+                      capacity: 10
+                      population: 1
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/dinosaur"
+    post:
+      summary: Creates a dinosaur
+      security:
+      - api_key: []
+      tags:
+      - Dinosaurs
+      parameters: []
+      responses:
+        '201':
+          description: Dinosaur created
+        '422':
+          description: invalid request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  default: New Dinosaur
+                diet:
+                  type: string
+                  default: carnivore|herbivore
+                cage_id:
+                  type: integer
+              required:
+              - name
+  "/dinosaurs/{id}":
+    get:
+      summary: Retrieves a dinosaur
+      security:
+      - api_key: []
+      tags:
+      - Dinosaurs
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: include_cage
+        in: query
+        description: Include cage
+        default: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Dinosaur found
+          content:
+            application/json:
+              examples:
+                dinosaur:
+                  value:
+                    id: 49
+                    name: Tyrannosaurus
+                    cage_id: 99
+                    diet: carnivore
+                dinosaurs_with_cage:
+                  value:
+                    id: 49
+                    name: Tyrannosaurus
+                    cage_id: 99
+                    diet: carnivore
+                    cage:
+                      id: 99
+                      name: Test Cage
+                      status: active
+                      capacity: 10
+                      population: 1
+              schema:
+                "$ref": "#/components/schemas/dinosaur"
+        '404':
+          description: Dinosaur not found
+    patch:
+      summary: Updates a dinosaur
+      security:
+      - api_key: []
+      tags:
+      - Dinosaurs
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Dinosaur updated
+        '404':
+          description: Dinosaur not found
+        '422':
+          description: invalid request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  default: New Dinosaur
+                diet:
+                  type: string
+                  default: herbivore
+              required:
+              - name
+    delete:
+      summary: Deletes a dinosaur
+      security:
+      - api_key: []
+      tags:
+      - Dinosaurs
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Dinosaur deleted
 servers:
 - url: http://{defaultHost}
   variables:
     defaultHost:
       default: localhost:3000
 components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: X-API-KEY
+      in: header
   schemas:
     cage:
       type: object
@@ -153,3 +380,21 @@ components:
       required:
       - id
       - name
+    dinosaur:
+      type: object
+      properties:
+        id:
+          type: integer
+        cage_id:
+          type: integer
+        name:
+          type: string
+        diet:
+          type: string
+        cage:
+          "$ref": "#/components/schemas/cage"
+      required:
+      - id
+      - name
+      - diet
+      - cage_id

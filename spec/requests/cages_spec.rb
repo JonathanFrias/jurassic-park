@@ -1,6 +1,9 @@
 require 'swagger_helper'
 
 RSpec.describe 'cages', type: :request do
+
+  include DinosaurSpecHelper
+
   path '/cages' do
     get 'Retrieves all cages' do
       tags 'Cages'
@@ -9,7 +12,7 @@ RSpec.describe 'cages', type: :request do
 
       parameter name: :page,     in: :query, type: :integer, description: 'Page number', default: 1
       parameter name: :items, in: :query, type: :integer, description: 'Per page count', default: 10
-      parameter name: :offset, in: :query, type: :integer, description: 'Offset', default: 0
+      parameter name: :include_dinosaurs, in: :query, type: :boolean, description: "Include dinosaurs", default: false
 
       response '200', 'List your Jurassic Park Cages' do
         schema type: :array,
@@ -19,7 +22,7 @@ RSpec.describe 'cages', type: :request do
         example 'application/json', :cages, CagePresenter.from_collection(cages).as_json
 
         let(:page) { 1 }
-        let(:offset) { 0 }
+        let(:include_dinosaurs) { false }
         let(:items) { 10 }
 
         run_test!
@@ -35,7 +38,7 @@ RSpec.describe 'cages', type: :request do
         type: :object,
         properties: {
           name: { type: :string, default: "New Cage" },
-          status: { type: :string, default: "down" }
+          status: { type: :string, default: "active|down" }
         },
         required: [ 'name' ]
       }
@@ -60,9 +63,11 @@ RSpec.describe 'cages', type: :request do
       produces 'application/json'
 
       parameter name: :id, in: :path, type: :integer
+      parameter name: :include_dinosaurs, in: :query, type: :boolean, description: "Include dinosaurs", default: false
 
       response '200', 'Cage found' do
         let(:id) { Cage.create(name: 'Herbivores').id }
+        let(:include_dinosaurs) { false }
         run_test!
       end
 
@@ -82,7 +87,8 @@ RSpec.describe 'cages', type: :request do
         type: :object,
         properties: {
           name: { type: :string, default: "Herbivores Cage" },
-          status: { type: :string, default: "down" }
+          status: { type: :string, default: "active|down" },
+          capacity: { type: :integer, default: 10 }
         },
         required: [ 'name' ]
       }
@@ -119,8 +125,8 @@ RSpec.describe 'cages', type: :request do
       end
 
       response '422', 'invalid request' do
-        let(:id) { Cage.create(name: 'Herbivores').id }
-        let!(:dinosaur) { Dinosaur.tyrannosaurus.update(cage_id: id) }
+        let(:id) { Cage.create(name: 'Herbivores', status: "active").id }
+        let!(:dinosaur) { tyrannosaurus.update(cage_id: id) }
 
         run_test! do |response|
           expect(response.body).to eq "[\"Cage must be empty before it can be destroyed\"]"

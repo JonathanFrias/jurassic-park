@@ -42,6 +42,19 @@ RSpec.configure do |config|
               status: { type: :string }
             },
             required: %w[id name]
+          },
+          dinosaur: {
+            type: :object,
+            properties: {
+              id: { type: :integer },
+              cage_id: { type: :integer },
+              name: { type: :string },
+              diet: { type: :string },
+              cage: {
+                '$ref' => '#/components/schemas/cage'
+              },
+            },
+            required: %w[id name diet cage_id]
           }
         }
       }

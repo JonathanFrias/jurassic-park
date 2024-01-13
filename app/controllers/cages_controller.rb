@@ -3,30 +3,30 @@ class CagesController < ApplicationController
   before_action :set_cage, only: [:show, :update, :destroy]
 
   def index
-    pagy, cages = pagy(Cage.all, items: params[:items], outset: params[:offset])
+    pagy, cages = pagy(Cage.all, items: params[:items], page: params[:page])
 
     response.headers["X-Total-Count"] = pagy.count
 
-    render json: CagePresenter.from_collection(cages)
+    render json: CagePresenter.from_collection(cages).map { |cage| cage.as_json(include_dinosaurs: bool(params[:include_dinosaurs])) }
   end
 
   def create
-    cage = Cage.new(cage_params)
+    @cage = Cage.new(cage_params)
 
     if cage.save
-      render json: cage_presenter, status: :created
+      render json: cage_presenter_json, status: :created
     else
       render json: cage.errors.full_messages, status: :unprocessable_entity
     end
   end
 
   def show
-    render json: cage_presenter, status: :ok
+    render json: cage_presenter_json, status: :ok
   end
 
   def update
     if cage.update(cage_params)
-      render json: cage_presenter, status: :ok
+      render json: cage_presenter_json, status: :ok
     else
       render json: cage.errors.full_messages, status: :unprocessable_entity
     end
@@ -34,7 +34,7 @@ class CagesController < ApplicationController
 
   def destroy
     if cage.destroy
-      render json: cage_presenter, status: :ok
+      render json: cage_presenter_json, status: :ok
     else
       render json: cage.errors.full_messages, status: :unprocessable_entity
     end
@@ -44,7 +44,7 @@ class CagesController < ApplicationController
   attr_reader :cage
 
   def cage_params
-    params.require(:cage).permit(:name, :status)
+    params.require(:cage).permit(:name, :status, :capacity)
   end
 
   def set_cage
@@ -53,7 +53,7 @@ class CagesController < ApplicationController
     head :not_found
   end
 
-  def cage_presenter
-    CagePresenter.new(cage)
+  def cage_presenter_json
+    CagePresenter.new(cage).as_json(include_dinosaurs: bool(params[:include_dinosaurs]))
   end
 end

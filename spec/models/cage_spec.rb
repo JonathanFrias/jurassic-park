@@ -53,6 +53,6 @@ RSpec.describe Cage, type: :model do
     cage = Cage.create!(name: "Herbivores", status: "down")
     brachiosaurus.update(cage: cage)
     expect(cage).not_to be_valid
-    expect(cage.errors.full_messages).to eq  ["Cage must be powered on to contain dinosaurs"]
+    expect(cage.errors.full_messages).to eq ["Cage must be powered on to contain dinosaurs", "Dinosaurs is invalid"]
   end
 end

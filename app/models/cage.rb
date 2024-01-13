@@ -15,7 +15,7 @@ class Cage < ApplicationRecord
   end
 
   def empty_cage?
-    dinosaurs_count.to_i.zero?
+    dinosaurs_count.to_i.zero? && dinosaurs.empty?
   end
 
   def validate_same_diet
@@ -37,7 +37,7 @@ class Cage < ApplicationRecord
   def validate_powered_on
     return if empty_cage?
 
-    if status == 'down' && dinosaurs_count.to_i.positive?
+    if status == 'down'
       errors.add(:base, 'Cage must be powered on to contain dinosaurs')
     end
   end

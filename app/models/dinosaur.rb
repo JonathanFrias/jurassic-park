@@ -1,5 +1,5 @@
 class Dinosaur < ApplicationRecord
-  belongs_to :cage, optional: false, inverse_of: :dinosaurs
+  belongs_to :cage, optional: false, inverse_of: :dinosaurs, counter_cache: true
 
   validate :validate_cage
 

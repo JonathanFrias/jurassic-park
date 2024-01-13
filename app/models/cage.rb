@@ -1,9 +1,11 @@
 class Cage < ApplicationRecord
   validates :name, presence: true, length: { minimum: 1, maximum: 255 }
   validates :status, presence: true, inclusion: { in: %w[active down], message: "must be 'active' or 'down'" }
+  validates :dinosaurs_count, numericality: { less_than_or_equal_to: -> (record) { record.capacity.to_i }, message: "capacity limit reached" }
+  validate :validate_powered_on
   validate :validate_same_diet
   validate :validate_carnivores_species
-  has_many :dinosaurs, counter_cache: true, inverse_of: :cage
+  has_many :dinosaurs
 
   before_destroy do
     unless empty_cage?
@@ -13,7 +15,7 @@ class Cage < ApplicationRecord
   end
 
   def empty_cage?
-    dinosaurs.count.zero?
+    dinosaurs_count.to_i.zero?
   end
 
   def validate_same_diet
@@ -29,6 +31,14 @@ class Cage < ApplicationRecord
 
     if dinosaurs.carnivores.select(:name).group(:name).length > 1
       errors.add(:base, 'Cage must contain dinosaurs with the same species if they are carnivores')
+    end
+  end
+
+  def validate_powered_on
+    return if empty_cage?
+
+    if status == 'down' && dinosaurs_count.to_i.positive?
+      errors.add(:base, 'Cage must be powered on to contain dinosaurs')
     end
   end
 end

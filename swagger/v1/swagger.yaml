@@ -36,10 +36,10 @@ paths:
               examples:
                 cages:
                   value:
-                  - id: 53
+                  - id: 59
                     name: Herbivores
                     status: closed
-                  - id: 54
+                  - id: 60
                     name: Carnivores
                     status: closed
               schema:

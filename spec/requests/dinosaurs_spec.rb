@@ -3,6 +3,8 @@ require 'swagger_helper'
 RSpec.describe 'dinosaurs', type: :request do
 
   let(:cage) { Cage.create(name: "Test Cage", status: "active") }
+  let(:api_key) { User.create(token: SecureRandom.uuid).token }
+  let(:'X-API-KEY') { api_key }
 
   path '/dinosaurs' do
     get 'Retrieves all dinosaurs' do

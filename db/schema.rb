@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_13_165518) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_13_195931) do
   create_table "cages", force: :cascade do |t|
     t.string "name"
     t.string "status", default: "down"

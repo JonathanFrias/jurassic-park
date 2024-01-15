@@ -21,7 +21,7 @@ class Cage < ApplicationRecord
   def validate_same_diet
     return if id.nil?
 
-    if dinosaurs.select(:diet).group(:diet).length > 1
+    if dinosaurs.map(&:diet).uniq.length > 1
       errors.add(:base, 'Cage must contain dinosaurs with the same diet')
     end
   end
@@ -29,7 +29,7 @@ class Cage < ApplicationRecord
   def validate_carnivores_species
     return if id.nil?
 
-    if dinosaurs.carnivores.select(:name).group(:name).length > 1
+    if dinosaurs.select(&:carnivore?).map(&:name).uniq.length > 1
       errors.add(:base, 'Cage must contain dinosaurs with the same species if they are carnivores')
     end
   end

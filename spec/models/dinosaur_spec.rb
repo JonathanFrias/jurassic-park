@@ -26,6 +26,6 @@ RSpec.describe Dinosaur, type: :model do
     (dinosaur1 = brachiosaurus).update(cage: cage)
     (dinosaur2 = brachiosaurus).update(cage: cage)
     expect(dinosaur2).not_to be_valid
-    expect(dinosaur2.errors.full_messages).to eq ["Cage over capacity"]
+    expect(dinosaur2.errors.full_messages).to include ("Cage over capacity")
   end
 end

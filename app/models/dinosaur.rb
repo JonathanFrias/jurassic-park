@@ -2,7 +2,9 @@ class Dinosaur < ApplicationRecord
   belongs_to :cage, optional: false, inverse_of: :dinosaurs, counter_cache: true
 
   scope :carnivores, -> { where(diet: "carnivore") }
+  def carnivore? = (diet == "carnivore")
   scope :herbivores, -> { where(diet: "herbivore") }
+  def herbivore? = (diet == "herbivore")
 
   validates :cage, presence: true
   validates :name, presence: true
@@ -16,6 +18,10 @@ class Dinosaur < ApplicationRecord
 
     errors.add(:cage, "must be powered on") unless cage.status == "active"
     errors.add(:cage, "over capacity") if cage.capacity < cage.dinosaurs_count + (new_record? ? 1 : 0)
+
+    errors.full_messages.each do |message|
+      cage.errors.add(:base, message)
+    end
 
     cage.errors.full_messages.each do |message|
       errors.add(:base, message)

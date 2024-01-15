@@ -4,6 +4,9 @@ RSpec.describe 'cages', type: :request do
 
   include DinosaurSpecHelper
 
+  let(:api_key) { User.create(token: SecureRandom.uuid).token }
+  let(:'X-API-KEY') { api_key }
+
   path '/cages' do
     get 'Retrieves all cages' do
       security [ api_key: [] ]
@@ -78,6 +81,7 @@ RSpec.describe 'cages', type: :request do
 
       response '404', 'Cage not found' do
         let(:id) { 123456789 }
+        let(:include_dinosaurs) { false }
         run_test!
       end
     end

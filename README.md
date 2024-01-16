@@ -32,6 +32,11 @@ The general approach for this project is to keep it as simple as possible, so I 
 
 For quickly setting up an api that you can share with fellow developers and allow them to quickly play around with, I think this is an excellent choice. There are some plugins that can take swagger docs as input and generate rich clients for every popular language. This means that you have excellent developer docs that are up to date, and you have a nice integration plan for other vendors even if they don't write Ruby.
 
+### Security
+
+Security is pretty simple - a preshared key. Secrets can be generated using `rails secret`. Must be set manually in the rails console for now. 
+`User.find('1user_id').update(token: "YOUR KEY")`
+
 ### Validations
 
 For validations, ActiveRecord validations were used handle the data validation. This is preferable for smaller apps like these where super complex validation is not required.
@@ -77,13 +82,19 @@ There is a drawback to this approach, since it means that you may have to implem
 "I think this style makes the presenter a monad, but don't quote me on that" - Jonathan
 
 
-### Scale
+### Performance / Scale
 
 Since most of the validation code happens in ruby code, there may be potential concurrency issues. In the future, we would need to test that changes that are made are either:
 
 1. Fully wrapped in a transaction
-2. Versioned (such that if you try to save a record and you don't have the latest version the write will raise)
+2. Record Versioning (such that if you try to save a record and you don't have the latest version the write will raise)
+
+I would lean more towards versioning as it helps avoid locking.
+
+To mitigate performance issues/excessive chattiness associated with api overfetching/underfetching, I've added a `include_dinosaurs`, `include_cage` options to the api. I'm guessing that clients are very likely to want to fetch associated cages with dinosaurs, so there is an option to fetch both at the same time. This gives the client a reasonable amount of control, without going full Graphql, as that would be too far.
+
+I've added pagination support to the api, as that helps thing stay managable at larger record counts. I did add the total count as a header value instead of adding it to the payload. I do think it's important to have that, and doing it this way allows the request body to be a simple array, instead of something nested.
 
 ### Database
 
-I prefer the awesome Postgresql, howerver since I did not need any postgresql-specific features to complete this project I kept using sqlite. Keeping things easier to install for my readers is more important than using a database that I don't need.
+I'm a Postgresql fan, howerver since I did not need any postgres-specific features to complete this project I kept using sqlite, to keep the project simple, and the installation process easier.

@@ -3,7 +3,10 @@ class CagesController < ApplicationController
   before_action :set_cage, only: [:show, :update, :destroy]
 
   def index
-    pagy, cages = pagy(Cage.all, items: params[:items], page: params[:page])
+    query = Cage.all
+    query = query.includes(:dinosaurs) if bool(params[:include_dinosaurs])
+
+    pagy, cages = pagy(query, items: params[:items], page: params[:page])
 
     response.headers["X-Total-Count"] = pagy.count
 
